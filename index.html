@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel='shortcut icon' href='trackslice.jpg' type='image/x-icon' />
+<title>Track Slice</title>
+<link rel='stylesheet' href='style.css' />
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-black">
+
+<div class="max-w-3xl mx-auto rounded mt-2 bg-[#eeeeee] flex flex-col items-center p-6">
+  
+  <div class="flex flex-col md:flex-row gap-2 justify-between">
+    <p><span class="p-1 bg-gray-300 rounder-md">spacebar</span> = start / stop</p>
+    <p><span class="p-1 bg-gray-300 rounder-md">shift + spacebar</span> = play 5 seconds from end marker</p>
+  </div>
+
+  <!-- TITLE + Dropzone + Export Container -->
+  <div class="w-full max-w-2xl mx-auto mt-4 md:mt-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 font-mono">
+
+    <h1 class="tracking-widest font-bold text-center bg-white text-black p-2 rounded">
+      <img src="trackslice.jpg" class="w-12 h-12 inline-block mr-1 -mb-1 md:mb-0" alt="Track Slice">TrackSlice
+    </h1>
+
+    <!-- Dropzone / Click-to-upload -->
+    <div id="dropzone" 
+         class="w-full md:w-1/2 p-6 border-2 border-dashed border-gray-300 rounded-xl bg-[#eeeeee] hover:border-gray-400 hover:bg-[#dddddd] transition cursor-pointer text-center">
+      <p class="text-gray-700 mb-1 tracking-wide">DROP / CLICK TO LOAD</p>
+      <p class="text-gray-500 text-xs">Supported: MP3 / WAV</p>
+      <input type="file" id="audioFile" accept=".mp3,.wav" class="hidden">
+    </div>
+
+  </div>
+
+  <!-- File Info -->
+  <div id="info" class="w-full max-w-2xl flex justify-end text-yellow-800 text-sm -mt-2 mb-4 font-mono"></div>
+
+  <!-- Start Slider (Console Style) -->
+  <div class="w-full max-w-2xl mb-4 flex flex-col md:flex-row items-center gap-4 font-mono">
+    <div class="flex items-center justify-between w-full md:w-52 bg-[#dddddd] rounded-lg px-3 py-2">
+      <label for="startTime" class="text-gray-600 text-sm tracking-wide">START</label>
+      <input
+        type="number"
+        id="startTime"
+        step="0.01"
+        value="0"
+        min="0"
+        class="w-28 px-2 py-1 bg-[#e6dfd1] border border-gray-300 text-[#1a9595] rounded-md focus:outline-none focus:ring-1 focus:ring-[#077272] tabular-nums"
+      >
+    </div>
+    <input
+      type="range"
+      id="startSlider"
+      min="0"
+      max="0"
+      step="0.01"
+      value="0"
+      class="console-slider start w-full md:flex-1 h-2 rounded-lg cursor-pointer"
+    >
+  </div>
+
+  <!-- End Slider (Console Style) -->
+  <div class="w-full max-w-2xl mb-4 flex flex-col md:flex-row items-center gap-4 font-mono">
+    <div class="flex items-center justify-between w-full md:w-52 bg-[#dddddd] rounded-lg px-3 py-2">
+      <label for="endTime" class="text-gray-600 text-sm tracking-wide">END</label>
+      <input
+        type="number"
+        id="endTime"
+        step="0.01"
+        value="0"
+        min="0"
+        class="w-28 px-2 py-1 bg-[#e6dfd1] border border-gray-300 text-[#bb3e8e] rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 tabular-nums"
+      >
+    </div>
+    <input
+      type="range"
+      id="endSlider"
+      min="0"
+      max="0"
+      step="0.01"
+      value="0"
+      class="console-slider end w-full md:flex-1 h-2 rounded-lg cursor-pointer"
+    >
+  </div>
+
+  <!-- Start | End | Live | Export (Compact Console Layout) -->
+  <div class="w-full max-w-2xl mt-2 md:mt-0.5 mb-6 grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto] gap-4 font-mono items-stretch">
+
+    <!-- START -->
+    <div class="flex flex-col justify-center items-center bg-[#dddddd] rounded-lg py-6 w-full">
+      <span class="text-gray-600 text-sm tracking-wide">START</span>
+      <span id="startMarker" class="text-[#1a9595] text-lg tabular-nums mt-1">00:00:00</span>
+    </div>
+
+    <!-- END -->
+    <div class="flex flex-col justify-center items-center bg-[#dddddd] rounded-lg py-6 w-full">
+      <span class="text-gray-600 text-sm tracking-wide">END</span>
+      <span id="endMarker" class="text-[#bb3e8e] text-lg tabular-nums mt-1">00:00:00</span>
+    </div>
+
+    <!-- LIVE -->
+    <div class="flex flex-col justify-center items-center bg-[#fdf8ed] rounded-lg py-6 border border-gray-400 shadow-inner w-full">
+      <span class="text-gray-700 text-sm tracking-wide">PLAYBACK</span>
+      <span id="liveTime" class="text-[#a66516] text-xl font-semibold tabular-nums mt-1">00:00:00</span>
+    </div>
+
+    <!-- EXPORT -->
+    <button id="exportBtn"
+      class="group flex flex-col justify-center items-center bg-gradient-to-r from-[#bdc634] to-[#d79f18] hover:bg-gradient-to-r hover:from-[#d79f18] hover:to-[#bdc634] rounded-lg border border-gray-100 transition duration-200 px-6 md:px-8 py-6 md:py-4 min-w-[130px]">
+      <span class="font-semibold tracking-wide text-sm group-hover:text-white">EXPORT</span>
+      <span id="sliceDuration" class="text-sm mt-1 group-hover:text-white transition">0.00s</span>
+    </button>
+
+  </div>
+
+
+</div>
+</body>
+
+
+
+
+<script src="script.js"></script>
+</body>
+</html>

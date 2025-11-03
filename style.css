@@ -1,0 +1,109 @@
+
+
+/* ====== Dropzone Styling ====== */
+#dropzone {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+#dropzone:hover {
+  box-shadow: 0 0 12px 1px rgba(255, 255, 241, 0.3);
+}
+
+/* Subtle glow on drag-over */
+#dropzone.drag-over {
+  border-color: #6366f1;
+  background-color: #1e1b4b;
+  box-shadow: 0 0 14px 4px rgba(99, 102, 241, 0.4);
+}
+
+/* ====== Export Button Console Glow ====== */
+#exportBtn {
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+#exportBtn:hover {
+  transform: translateY(-0px);
+  box-shadow: 0 0 1px 1px white;
+}
+
+/* Track glow effect on hover */
+.console-slider.start:hover {
+  box-shadow: 0 0 8px 2px rgba(52, 211, 153, 0.5); /* green-400 */
+}
+.console-slider.end:hover {
+  box-shadow: 0 0 8px 2px rgba(239, 68, 68, 0.5); /* red-500 */
+}
+
+/* Chrome / Edge / Safari */
+.console-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+/* Green (Start) Thumb */
+.console-slider.start::-webkit-slider-thumb {
+  background: radial-gradient(circle at 30% 30%, #6ee7b7, #10b981); /* green-300 to green-500 */
+  border: 2px solid #34d399; /* green-400 */
+  box-shadow: 0 0 6px 2px rgba(16, 185, 129, 0.5);
+}
+.console-slider.start::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 10px 3px rgba(16, 185, 129, 0.7);
+}
+
+/* Red (End) Thumb */
+.console-slider.end::-webkit-slider-thumb {
+  /* background: radial-gradient(circle at 30% 30%, #c23064, #b02759); */
+  border: 2px solid #f87171;
+  /* box-shadow: 0 0 6px 2px #b02759; */
+}
+.console-slider.end::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  /* box-shadow: 0 0 10px 3px #b02759; */
+}
+
+/* Firefox support */
+.console-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+.console-slider.start::-moz-range-thumb {
+  background: radial-gradient(circle at 30% 30%, #1a9595, #077272);
+  box-shadow: 0 0 6px 2px rgba(16, 185, 129, 0.5);
+}
+.console-slider.end::-moz-range-thumb {
+  background: radial-gradient(circle at 30% 30%, #bb3e8e, #b02759);
+  box-shadow: 0 0 6px 2px rgba(239, 68, 68, 0.5);
+}
+
+/* Firefox track styling */
+.console-slider::-moz-range-track {
+  background: linear-gradient(to right, #e1d7c9, #ede7d8);
+  border-radius: 6px;
+  height: 10px;
+}
+
+/* Smooth thumb focus ring */
+.console-slider:focus::-webkit-slider-thumb {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+}
+
+/* ===== Console Slider Styling ===== */
+.console-slider {
+  appearance: none;
+  height: 6px;
+  background: linear-gradient(to right, #1f2937, #111827);
+  border-radius: 6px;
+  outline: none;
+  transition: box-shadow 0.2s ease;
+}
+
