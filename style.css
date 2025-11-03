@@ -47,8 +47,8 @@
 
 /* Green (Start) Thumb */
 .console-slider.start::-webkit-slider-thumb {
-  background: radial-gradient(circle at 30% 30%, #6ee7b7, #10b981); /* green-300 to green-500 */
-  border: 2px solid #34d399; /* green-400 */
+  background: radial-gradient(circle at 30% 30%, #6ee7b7, #10b981);
+  border: 2px solid #34d399;
   box-shadow: 0 0 6px 2px rgba(16, 185, 129, 0.5);
 }
 .console-slider.start::-webkit-slider-thumb:hover {
@@ -56,16 +56,29 @@
   box-shadow: 0 0 10px 3px rgba(16, 185, 129, 0.7);
 }
 
-/* Red (End) Thumb */
+/* Magenta (End) Thumb — 3D Look */
 .console-slider.end::-webkit-slider-thumb {
-  /* background: radial-gradient(circle at 30% 30%, #c23064, #b02759); */
-  border: 2px solid #f87171;
-  /* box-shadow: 0 0 6px 2px #b02759; */
+  background: radial-gradient(circle at 30% 30%, #f19ed0, #bb3e8e);
+  border: 2px solid #d266ab;
+  box-shadow: 0 0 6px 2px rgba(187, 62, 142, 0.5);
 }
 .console-slider.end::-webkit-slider-thumb:hover {
   transform: scale(1.15);
-  /* box-shadow: 0 0 10px 3px #b02759; */
+  box-shadow: 0 0 10px 3px rgba(187, 62, 142, 0.7);
 }
+
+/* Firefox equivalent */
+.console-slider.end::-moz-range-thumb {
+  background: radial-gradient(circle at 30% 30%, #f19ed0, #bb3e8e);
+  border: 2px solid #d266ab;
+  box-shadow: 0 0 6px 2px rgba(187, 62, 142, 0.5);
+}
+.console-slider.end::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 10px 3px rgba(187, 62, 142, 0.7);
+}
+
+
 
 /* Firefox support */
 .console-slider::-moz-range-thumb {

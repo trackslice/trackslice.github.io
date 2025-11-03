@@ -6,7 +6,7 @@
 <link rel='shortcut icon' href='trackslice.jpg' type='image/x-icon' />
 <title>Track Slice</title>
 <link rel='stylesheet' href='style.css' />
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="tailwindcss.min.js"></script>
 </head>
 <body class="bg-gray-100 text-black">
 
@@ -107,11 +107,25 @@
     </div>
 
     <!-- EXPORT -->
-    <button id="exportBtn"
-      class="group flex flex-col justify-center items-center bg-gradient-to-r from-[#bdc634] to-[#d79f18] hover:bg-gradient-to-r hover:from-[#d79f18] hover:to-[#bdc634] rounded-lg border border-gray-100 transition duration-200 px-6 md:px-8 py-6 md:py-4 min-w-[130px]">
-      <span class="font-semibold tracking-wide text-sm group-hover:text-white">EXPORT</span>
-      <span id="sliceDuration" class="text-sm mt-1 group-hover:text-white transition">0.00s</span>
+    <button
+      id="exportBtn"
+      class="group flex flex-col justify-center items-center
+            bg-gradient-to-r from-[#10b981] to-[#bb3e8e]
+            hover:from-[#bb3e8e] hover:to-[#10b981]
+            rounded-lg border border-gray-200 shadow-sm shadow-[#10b981]/20
+            transition duration-300 px-6 md:px-8 py-6 md:py-4 min-w-[130px]"
+    >
+      <span class="font-semibold tracking-wide text-sm text-white drop-shadow-sm">
+        EXPORT
+      </span>
+      <span
+        id="sliceDuration"
+        class="text-sm mt-1 text-white/90 group-hover:scale-105 transition-transform duration-300"
+      >
+        0.00s
+      </span>
     </button>
+
 
   </div>
 
