@@ -13,6 +13,9 @@ const startMarkerEl = document.getElementById("startMarker");
 const liveTimeEl = document.getElementById("liveTime");
 const endMarkerEl = document.getElementById("endMarker");
 
+let isLooping = false;
+let loopBtn = document.getElementById("loopBtn");
+
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('audioFile');
 
@@ -121,7 +124,13 @@ function playFromStart(){
     isPlaying = false;
     clearInterval(updateInterval);
     liveTimeEl.textContent = startMarkerEl.textContent;
+
+    if (isLooping) {
+      // restart playback after a short pause
+      setTimeout(() => playFromStart(), 100);
+    }
   };
+
 }
 
 function stopAudio(){
@@ -174,7 +183,13 @@ function playFromEndSnippet(){
     isPlaying = false;
     clearInterval(updateInterval);
     liveTimeEl.textContent = startMarkerEl.textContent;
+
+    if (isLooping) {
+      // restart playback after a short pause
+      setTimeout(() => playFromStart(), 100);
+    }
   };
+
 }
 
 
@@ -244,7 +259,21 @@ function exportWav(){
   a.click();
 }
 
-// --- EVENT LISTENERS ---
+const loopContainer = document.getElementById("loopBtn");
+const loopToggleBtn = loopContainer.querySelector("button");
+
+loopContainer.addEventListener("click", () => {
+  isLooping = !isLooping;
+
+  // Update inner button label
+  loopToggleBtn.textContent = isLooping ? "ON" : "OFF";
+
+  // Visual feedback on container
+  loopContainer.classList.toggle("bg-transparent", isLooping);
+  loopContainer.classList.toggle("bg-transparent", !isLooping);
+});
+
+
 document.getElementById("exportBtn").addEventListener("click", exportWav);
 
 document.addEventListener("keydown", (e)=>{
