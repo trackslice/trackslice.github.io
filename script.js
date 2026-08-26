@@ -210,54 +210,219 @@ function updateSliceDuration(){
 updateSliceDuration();
 
 
-// --- EXPORT WAV ---
-function exportWav(){
-  if(!audioBuffer) return alert("Load a file first!");
+// --- EXPORT RIGHT CHANNEL ONLY WAV ---
+// --- EXPORT RIGHT CHANNEL ONLY WAV ---
+// --- EXPORT RIGHT CHANNEL ONLY WAV ---
+
+// function exportWav(){
+//   if(!audioBuffer) return alert("Load a file first!");
+
+//   const start = parseFloat(startInput.value);
+//   const end = parseFloat(endInput.value);
+//   const sampleRate = audioBuffer.sampleRate;
+//   const startSample = Math.floor(start * sampleRate);
+//   const endSample = Math.floor(end * sampleRate);
+//   const length = endSample - startSample;
+
+//   const buffer = new ArrayBuffer(44 + length*2);
+//   const view = new DataView(buffer);
+
+//   function writeString(view, offset, str){
+//     for(let i=0;i<str.length;i++) view.setUint8(offset+i,str.charCodeAt(i));
+//   }
+
+//   writeString(view,0,'RIFF');
+//   view.setUint32(4,36+length*2,true);
+//   writeString(view,8,'WAVE');
+//   writeString(view,12,'fmt ');
+//   view.setUint32(16,16,true);
+//   view.setUint16(20,1,true);
+//   view.setUint16(22,1,true);
+//   view.setUint32(24,sampleRate,true);
+//   view.setUint32(28,sampleRate*2,true);
+//   view.setUint16(32,2,true);
+//   view.setUint16(34,16,true);
+//   writeString(view,36,'data');
+//   view.setUint32(40,length*2,true);
+
+//   const fadeSamples = Math.floor(Math.min(0.5,length/audioBuffer.sampleRate/2)*audioBuffer.sampleRate);
+//   const channelData = audioBuffer.getChannelData(0).slice(startSample, endSample);
+//   for(let i=0;i<length;i++){
+//     let gain = 1;
+//     if(i<fadeSamples) gain = i/fadeSamples;
+//     else if(i>=length-fadeSamples) gain = (length-i)/fadeSamples;
+//     let s = Math.max(-1, Math.min(1, channelData[i]*gain));
+//     view.setInt16(44+i*2, s<0?s*0x8000:s*0x7FFF,true);
+//   }
+
+//   const blob = new Blob([view],{type:'audio/wav'});
+//   const a = document.createElement('a');
+//   a.href = URL.createObjectURL(blob);
+//   a.download = 'slice.wav';
+//   a.click();
+// }
+
+// EXPORT STEREO CHANNELS
+// EXPORT STEREO CHANNELS
+// EXPORT STEREO CHANNELS
+function exportWav() {
+
+  if (!audioBuffer) {
+    alert("Load a file first!");
+    return;
+  }
 
   const start = parseFloat(startInput.value);
   const end = parseFloat(endInput.value);
+
   const sampleRate = audioBuffer.sampleRate;
+  const numberOfChannels = Math.min(audioBuffer.numberOfChannels, 2);
+
   const startSample = Math.floor(start * sampleRate);
   const endSample = Math.floor(end * sampleRate);
   const length = endSample - startSample;
 
-  const buffer = new ArrayBuffer(44 + length*2);
+  if (length <= 0) {
+    alert("Invalid slice range.");
+    return;
+  }
+
+  // Get channel data
+  const leftChannel = audioBuffer
+    .getChannelData(0)
+    .slice(startSample, endSample);
+
+  // If the source is mono, duplicate it to the right channel
+  const rightChannel = numberOfChannels > 1
+    ? audioBuffer.getChannelData(1).slice(startSample, endSample)
+    : leftChannel;
+
+  const bytesPerSample = 2; // 16-bit PCM
+  const blockAlign = numberOfChannels * bytesPerSample;
+  const byteRate = sampleRate * blockAlign;
+  const dataSize = length * blockAlign;
+
+  const buffer = new ArrayBuffer(44 + dataSize);
   const view = new DataView(buffer);
 
-  function writeString(view, offset, str){
-    for(let i=0;i<str.length;i++) view.setUint8(offset+i,str.charCodeAt(i));
+  function writeString(view, offset, str) {
+    for (let i = 0; i < str.length; i++) {
+      view.setUint8(offset + i, str.charCodeAt(i));
+    }
   }
 
-  writeString(view,0,'RIFF');
-  view.setUint32(4,36+length*2,true);
-  writeString(view,8,'WAVE');
-  writeString(view,12,'fmt ');
-  view.setUint32(16,16,true);
-  view.setUint16(20,1,true);
-  view.setUint16(22,1,true);
-  view.setUint32(24,sampleRate,true);
-  view.setUint32(28,sampleRate*2,true);
-  view.setUint16(32,2,true);
-  view.setUint16(34,16,true);
-  writeString(view,36,'data');
-  view.setUint32(40,length*2,true);
+  // ---------------------------------------------------------
+  // WAV HEADER
+  // ---------------------------------------------------------
 
-  const fadeSamples = Math.floor(Math.min(0.5,length/audioBuffer.sampleRate/2)*audioBuffer.sampleRate);
-  const channelData = audioBuffer.getChannelData(0).slice(startSample, endSample);
-  for(let i=0;i<length;i++){
+  writeString(view, 0, 'RIFF');
+  view.setUint32(4, 36 + dataSize, true);
+
+  writeString(view, 8, 'WAVE');
+
+  writeString(view, 12, 'fmt ');
+  view.setUint32(16, 16, true);              // PCM header size
+  view.setUint16(20, 1, true);               // PCM format
+  view.setUint16(22, numberOfChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, 16, true);              // 16-bit
+
+  writeString(view, 36, 'data');
+  view.setUint32(40, dataSize, true);
+
+  // ---------------------------------------------------------
+  // FADE
+  // ---------------------------------------------------------
+
+  const fadeSamples = Math.floor(
+    Math.min(
+      0.5,
+      length / sampleRate / 2
+    ) * sampleRate
+  );
+
+  // ---------------------------------------------------------
+  // WRITE INTERLEAVED STEREO DATA
+  // ---------------------------------------------------------
+
+  let offset = 44;
+
+  for (let i = 0; i < length; i++) {
+
     let gain = 1;
-    if(i<fadeSamples) gain = i/fadeSamples;
-    else if(i>=length-fadeSamples) gain = (length-i)/fadeSamples;
-    let s = Math.max(-1, Math.min(1, channelData[i]*gain));
-    view.setInt16(44+i*2, s<0?s*0x8000:s*0x7FFF,true);
+
+    if (fadeSamples > 0) {
+
+      if (i < fadeSamples) {
+        gain = i / fadeSamples;
+      }
+      else if (i >= length - fadeSamples) {
+        gain = (length - i) / fadeSamples;
+      }
+
+    }
+
+    // LEFT
+    let left = Math.max(
+      -1,
+      Math.min(1, leftChannel[i] * gain)
+    );
+
+    // RIGHT
+    let right = Math.max(
+      -1,
+      Math.min(1, rightChannel[i] * gain)
+    );
+
+    const leftSample =
+      left < 0
+        ? left * 0x8000
+        : left * 0x7FFF;
+
+    const rightSample =
+      right < 0
+        ? right * 0x8000
+        : right * 0x7FFF;
+
+    // IMPORTANT:
+    // WAV stereo PCM is interleaved:
+    //
+    // L R L R L R ...
+
+    view.setInt16(offset, leftSample, true);
+    offset += 2;
+
+    view.setInt16(offset, rightSample, true);
+    offset += 2;
   }
 
-  const blob = new Blob([view],{type:'audio/wav'});
+  // ---------------------------------------------------------
+  // DOWNLOAD
+  // ---------------------------------------------------------
+
+  const blob = new Blob(
+    [view],
+    { type: 'audio/wav' }
+  );
+
+  const url = URL.createObjectURL(blob);
+
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
+  a.href = url;
   a.download = 'slice.wav';
+
+  document.body.appendChild(a);
   a.click();
+  a.remove();
+
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 1000);
 }
+
+
 
 const loopContainer = document.getElementById("loopBtn");
 const loopToggleBtn = loopContainer.querySelector("button");
